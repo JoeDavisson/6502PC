@@ -14,8 +14,6 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-#include <stdint.h>
-
 enum
 {
   OP_NONE,             //            A 

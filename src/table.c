@@ -11,9 +11,11 @@
  *
  */
 
+#include <stdint.h>
+
 #include "table.h"
 
-int table_mode[] =
+uint8_t table_mode[] =
 {
   /* 0x00 */ OP_NONE,
   /* 0x01 */ OP_X_INDIRECT8,

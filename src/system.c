@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "func.h"
 #include "system.h"
@@ -56,8 +57,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 #define FLAG(condition, flag) if(condition) SET_FLAG(flag); else CLEAR_FLAG(flag)
 
-extern int table_mode[];
-static int op_bytes[] = { 1, 2, 2, 3, 2, 2, 3, 3, 3, 2, 2, 2 };
+extern uint8_t table_mode[];
+static uint8_t op_bytes[] = { 1, 2, 2, 3, 2, 2, 3, 3, 3, 2, 2, 2 };
 struct _sys sys;
 
 static int system_execute(const int opcode)
