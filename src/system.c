@@ -63,47 +63,6 @@ struct _sys sys;
 //long long int count = 0;
 //long long int inc = 0;
 
-// return calculated address for each mode
-static int calc_address(int address, int mode)
-{
-  int lo = READ_RAM(address);
-  int hi = READ_RAM((address + 1) & 0xFFFF);
-  int indirect;
-
-  switch(mode)
-  {
-    case OP_NONE:
-      return address;
-    case OP_IMMEDIATE:
-      return address;
-    case OP_ADDRESS8:
-      return lo & 0xFF;
-    case OP_ADDRESS16:
-      return lo + 256 * hi;
-    case OP_INDEXED8_X:
-      return (lo + REG_X) & 0xFF;
-    case OP_INDEXED8_Y:
-      return (lo + REG_Y) & 0xFFFF;
-    case OP_INDEXED16_X:
-      return ((lo + 256 * hi) + REG_X) & 0xFFFF;
-    case OP_INDEXED16_Y:
-      return ((lo + 256 * hi) + REG_Y) & 0xFFFF;
-    case OP_INDIRECT16:
-      indirect = (lo + 256 * hi) & 0xFFFF;
-      return (READ_RAM(indirect) + 256 * READ_RAM((indirect + 1) & 0xFFFF)) & 0xFFFF;
-    case OP_X_INDIRECT8:
-      indirect = ((READ_RAM(lo) + REG_X) & 0xFF) + 256 * READ_RAM((lo + 1) & 0xFF);
-      return (indirect) & 0xFFFF;
-    case OP_INDIRECT8_Y:
-      indirect = READ_RAM(lo) + 256 * READ_RAM((lo + 1) & 0xFF);
-      return (indirect + REG_Y) & 0xFFFF;
-    case OP_RELATIVE:
-      return (address + ((signed char)READ_RAM(address) + 1)) & 0xFFFF;
-    default:
-      return -1;
-  }
-}
-
 static int system_execute(int opcode)
 {
   if(opcode < 0 || opcode > 0xFF)
@@ -113,12 +72,50 @@ static int system_execute(int opcode)
   }
   
   int mode = table_mode[opcode];
+  int address = REG_PC + 1;
+  int lo = READ_RAM(address);
+  int hi = READ_RAM((address + 1) & 0xFFFF);
+  int indirect;
 
-  int address = calc_address(REG_PC + 1, mode);
-  if(address == -1)
+  switch(mode)
   {
-    printf("Bad address.\n");
-    return -1;
+    case OP_NONE:
+      break;
+    case OP_IMMEDIATE:
+      break;
+    case OP_ADDRESS8:
+      address = lo & 0xFF;
+      break;
+    case OP_ADDRESS16:
+      address = lo + 256 * hi;
+      break;
+    case OP_INDEXED8_X:
+      address = (lo + REG_X) & 0xFF;
+      break;
+    case OP_INDEXED8_Y:
+      address = (lo + REG_Y) & 0xFFFF;
+      break;
+    case OP_INDEXED16_X:
+      address = ((lo + 256 * hi) + REG_X) & 0xFFFF;
+      break;
+    case OP_INDEXED16_Y:
+      address = ((lo + 256 * hi) + REG_Y) & 0xFFFF;
+      break;
+    case OP_INDIRECT16:
+      indirect = (lo + 256 * hi) & 0xFFFF;
+      address = (READ_RAM(indirect) + 256 * READ_RAM((indirect + 1) & 0xFFFF)) & 0xFFFF;
+      break;
+    case OP_X_INDIRECT8:
+      indirect = ((READ_RAM(lo) + REG_X) & 0xFF) + 256 * READ_RAM((lo + 1) & 0xFF);
+      address = (indirect) & 0xFFFF;
+      break;
+    case OP_INDIRECT8_Y:
+      indirect = READ_RAM(lo) + 256 * READ_RAM((lo + 1) & 0xFF);
+      address = (indirect + REG_Y) & 0xFFFF;
+      break;
+    case OP_RELATIVE:
+      address = (address + ((signed char)READ_RAM(address) + 1)) & 0xFFFF;
+      break;
   }
 
   int m = READ_RAM(address);
