@@ -33,7 +33,7 @@ struct _sys
 };
 
 int system_load(char *, int);
-void system_run(int);
+void system_run(const int);
 
 #endif
 

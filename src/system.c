@@ -60,10 +60,7 @@ extern int table_mode[];
 static int op_bytes[] = { 1, 2, 2, 3, 2, 2, 3, 3, 3, 2, 2, 2 };
 struct _sys sys;
 
-//long long int count = 0;
-//long long int inc = 0;
-
-static int system_execute(int opcode)
+static int system_execute(const int opcode)
 {
   if(opcode < 0 || opcode > 0xFF)
   {
@@ -71,10 +68,10 @@ static int system_execute(int opcode)
     return -1;
   }
   
-  int mode = table_mode[opcode];
+  const int mode = table_mode[opcode];
   int address = REG_PC + 1;
-  int lo = READ_RAM(address);
-  int hi = READ_RAM((address + 1) & 0xFFFF);
+  const int lo = READ_RAM(address);
+  const int hi = READ_RAM((address + 1) & 0xFFFF);
   int indirect;
 
   switch(mode)
@@ -103,10 +100,12 @@ static int system_execute(int opcode)
       break;
     case OP_INDIRECT16:
       indirect = (lo + 256 * hi) & 0xFFFF;
-      address = (READ_RAM(indirect) + 256 * READ_RAM((indirect + 1) & 0xFFFF)) & 0xFFFF;
+      address = (READ_RAM(indirect) +
+                  256 * READ_RAM((indirect + 1) & 0xFFFF)) & 0xFFFF;
       break;
     case OP_X_INDIRECT8:
-      indirect = ((READ_RAM(lo) + REG_X) & 0xFF) + 256 * READ_RAM((lo + 1) & 0xFF);
+      indirect = ((READ_RAM(lo) + REG_X) & 0xFF) +
+                   256 * READ_RAM((lo + 1) & 0xFF);
       address = (indirect) & 0xFFFF;
       break;
     case OP_INDIRECT8_Y:
@@ -121,7 +120,7 @@ static int system_execute(int opcode)
   int m = READ_RAM(address);
   int temp;
   int pc_lo, pc_hi;
-  int temp_a = REG_A;
+  const int temp_a = REG_A;
 
   switch(opcode)
   {
@@ -383,10 +382,6 @@ static int system_execute(int opcode)
     case 0x4C:
     case 0x6C:
       REG_PC = address;
-//if((inc & 0xffffff) == 0xffffff)
-//  printf("count = %lld\n", count);
-//count += 13;
-//inc++;
       return 1;
     // JSR
     case 0x20:
@@ -700,7 +695,6 @@ int system_load(char *fn, int address)
       break;
 
     sys.mem[i] = c;
-//    printf("0x%02X ", c);
   }
 
   printf("\n");
@@ -710,14 +704,14 @@ int system_load(char *fn, int address)
   return 0;
 }
 
-void system_run(int address)
+void system_run(const int address)
 {
   REG_PC = address;
 
   while(1)
   {
-    int opcode = READ_RAM(REG_PC);
-    int ret = system_execute(opcode);
+    const int opcode = READ_RAM(REG_PC);
+    const int ret = system_execute(opcode);
 
     if(ret == 0)
     {
@@ -728,7 +722,6 @@ void system_run(int address)
     {
       break;
     }
-//printf("0x%04X, 0x%02X\n", REG_PC, READ_RAM(0x400));
   }
 }
 
