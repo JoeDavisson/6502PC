@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
   if(optind < argc)
   {
-    if(system_load(argv[optind], 0x1000) < 0)
+    if(system_load(argv[optind], 0x200) < 0)
     {
       printf("Could not load program: %s\n", argv[optind]);
       return 0;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     printf("No filename.\n");
   }
 
-  system_run(0x1000);
+  system_run(0x200);
 
   return 0;
 }
