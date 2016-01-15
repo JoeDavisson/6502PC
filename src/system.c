@@ -679,7 +679,7 @@ static int system_execute(const int opcode)
 
 int system_load(char *fn, int address)
 {
-  if(address < 0 || address > 0xffff)
+  if(address < 0 || address > 0xFFFF)
     return -1;
 
   memset(sys.mem, 0, sizeof(sys.mem));
@@ -688,7 +688,7 @@ int system_load(char *fn, int address)
   if(!in)
     return -1;
 
-  for(int i = address; i <= 0xffff; i++)
+  for(int i = address; i <= 0xFFFF; i++)
   {
     int c = fgetc(in);
     if(c == EOF)
@@ -716,7 +716,7 @@ void system_run(const int address)
     if(ret == 0)
     {
       REG_PC += op_bytes[table_mode[opcode]];
-      REG_PC &= 0xffff;
+      REG_PC &= 0xFFFF;
     }
     else if(ret == -1)
     {
