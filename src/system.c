@@ -56,7 +56,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 #define FLAG(condition, flag) if(condition) SET_FLAG(flag); else CLEAR_FLAG(flag)
 
-extern struct _table_opcodes table_opcodes[];
+extern int table_mode[];
 static int op_bytes[] = { 1, 2, 2, 3, 2, 2, 3, 3, 3, 2, 2, 2 };
 struct _sys sys;
 
@@ -112,12 +112,7 @@ static int system_execute(int opcode)
     return -1;
   }
   
-  int mode = table_opcodes[opcode].op;
-  if(mode == M65XX_ERROR)
-  {
-    printf("Bad addressing mode.\n");
-    return -1;
-  }
+  int mode = table_mode[opcode];
 
   int address = calc_address(REG_PC + 1, mode);
   if(address == -1)
@@ -729,7 +724,7 @@ void system_run(int address)
 
     if(ret == 0)
     {
-      REG_PC += op_bytes[table_opcodes[opcode].op];
+      REG_PC += op_bytes[table_mode[opcode]];
       REG_PC &= 0xffff;
     }
     else if(ret == -1)
