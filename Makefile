@@ -1,35 +1,41 @@
 # 6502PC Makefile
-#
-PLATFORM=linux
-#PLATFORM=mingw32
-#PLATFORM=mingw64
 
 NAME="6502PC "
 VERSION=$(shell git describe --always --dirty)
 
 SRC_DIR=src
 
-ifeq ($(PLATFORM),linux)
+ifndef MAKE_HOST
+  $(error MAKE_HOST undefined)
+endif
+
+ifneq (,$(findstring linux,$(MAKE_HOST)))
   HOST=
   CC=gcc
   CFLAGS=-O3 -DPACKAGE_STRING=\"$(NAME)$(VERSION)\" $(INCLUDE)
   EXE=6502pc
 endif
 
-ifeq ($(PLATFORM),mingw32)
+ifneq (,$(findstring mingw,$(MAKE_HOST)))
+# mingw
+ifneq (,$(findstring i686,$(MAKE_HOST)))
   HOST=i686-w64-mingw32
   CC=$(HOST)-gcc
   CFLAGS=-O3 -static-libgcc -static-libstdc++ -DPACKAGE_STRING=\"$(NAME)$(VERSION)\" $(INCLUDE)
   LIBS+=-lgdi32 -lcomctl32 -lws2_32 -static -lpthread
   EXE=6502pc.exe
 endif
-
-ifeq ($(PLATFORM),mingw64)
+ifneq (,$(findstring x86_64,$(MAKE_HOST)))
   HOST=x86_64-w64-mingw32
   CC=$(HOST)-gcc
   CFLAGS=-O3 -static-libgcc -static-libstdc++ -DPACKAGE_STRING=\"$(NAME)$(VERSION)\" $(INCLUDE)
   LIBS+=-lgdi32 -lcomctl32 -lws2_32 -static -lpthread
   EXE=6502pc.exe
+endif
+endif
+
+ifndef HOST
+  $(error Unknown host)
 endif
 
 OBJ= \
